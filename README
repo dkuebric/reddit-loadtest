@@ -1,0 +1,9 @@
+##reddit-loadtest
+multi-mechanize load tests for open-source reddit installations
+
+work in progress.
+
+###Running
+Requires multi-mechanize.
+
+    $ multi-mechanize reddit
