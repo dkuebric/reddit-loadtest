@@ -8,41 +8,16 @@ import urllib
 import logging
 import sys
 import time
-
-BASE_URL = 'http://reddit.tracelytics.com'
-USER = 'mech1'
-PASS = 'asdfjk'
-
-FORM_DBG = 1
+from reddit_settings import *
 
 class Transaction(object):
     def __init__(self):
         self.custom_timers = {}
     
     def run(self):
-        br = mechanize.Browser()
-        cj = cookielib.LWPCookieJar()
-        br.set_cookiejar(cj)
+        cj,br = init_browser()
 
-        br.set_handle_equiv(True)
-        br.set_handle_gzip(True)
-        br.set_handle_redirect(True)
-        br.set_handle_referer(True)
-        br.set_handle_robots(False)
-
-        br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-
-        r= br.open(BASE_URL)
-
-        # Select the second (index one) form
-        br.select_form(nr=1)
-
-        # User credentials
-        br.form['user'] = USER
-        br.form['passwd'] = PASS
-
-        # Login
-        br.submit()
+        login(br, USER, PASS)
 
         # Open up comment page
         #posting = BASE_URL + '/r/reddit_test6/comments/2d/httpgooglecomq376080238706/?'
