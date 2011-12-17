@@ -13,7 +13,7 @@ from reddit_settings import *
 class Transaction(object):
     def __init__(self):
         self.custom_timers = {}
-    
+
     def run(self):
         cj,br = init_browser()
 
