@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 # some parts from http://stackoverflow.com/questions/4720470/using-python-and-mechanize-to-submit-form-data-and-authenticate
 
-
 import mechanize
-import cookielib
 import urllib
-import logging
-import sys
-import time
 from reddit_settings import *
 
 class Transaction(object):
@@ -17,12 +12,13 @@ class Transaction(object):
     def run(self):
         cj,br = init_browser()
 
-        login(br, USER, PASS)
+        user = get_user('submit_comment')
+
+        login(br, user, PASS)
 
         # Open up comment page
-        #posting = BASE_URL + '/r/reddit_test6/comments/2d/httpgooglecomq376080238706/?'
-        posting = BASE_URL + '/r/reddit_test9/comments/c/httpgooglecomq955348679349/'
-        rval = 'reddit_test9'
+        posting = BASE_URL + '/r/reddit_test6/comments/2d/httpgooglecomq376080238706/?'
+        rval = 'reddit_test6'
         # you can get the rval in other ways, but this will work for testing
 
         r = br.open(posting)
@@ -38,7 +34,6 @@ class Transaction(object):
         uh = br.form['uh']
 
         br.select_form(nr=12)
-        print "COMMENT FORM?", br.form
         thing_id = br.form['thing_id']
         id = '#' + br.form.attrs['id']
         # The id that gets posted is the form id with a '#' prepended.
@@ -58,6 +53,8 @@ class Transaction(object):
         req.add_header('X-Requested-With', 'XMLHttpRequest')
         cj.add_cookie_header(req)
         res = mechanize.urlopen(req)
+
+        put_user('submit_comment', user)
 
 if __name__ == '__main__':
     trans = Transaction()
