@@ -2,11 +2,43 @@ import mechanize
 import cookielib
 
 BASE_URL = 'http://reddit.tracelytics.com'
-USER = 'mech1'
-PASS = 'asdfjk'
 
-FORM_DBG = 1
+FORM_DBG = False
 
+# pre-generated users up to 100 -- must be created by running register.py manually
+BASE_USERNAME = 'user_'
+PASS = 'reddit' # password for all generated users
+
+# user pool management for different tests
+POOLS = {}
+
+class UserPool(object):
+    def __init__(self, size=100, basename=BASE_USERNAME):
+        self.in_users = []
+        self.out_users = {}
+        for i in xrange(size):
+            uname = basename + str(i+1)
+            self.in_users.append(uname)
+
+    def checkout(self):
+        u = self.in_users.pop()
+        self.out_users[u] = True
+        return u
+
+    def checkin(self, u):
+        del self.out_users[u]
+        self.in_users.append(u)
+
+def get_user(poolname):
+    if not poolname in POOLS:
+        POOLS[poolname] = UserPool()
+    return POOLS[poolname].checkout()
+
+def put_user(poolname, u):
+    return POOLS[poolname].checkin(u)
+
+
+# utility functions
 def init_browser():
     """Returns an initialized browser and associated cookie jar."""
     br = mechanize.Browser()
@@ -23,14 +55,9 @@ def init_browser():
     return cj,br
 
 def login(br, u, p):
-    r = br.open(BASE_URL)
+    _ = br.open(BASE_URL)
 
-    # Select the second (index one) form
     br.select_form(nr=1)
-
-    # User credentials
-    br.form['user'] = USER
-    br.form['passwd'] = PASS
-
-    # Login
+    br.form['user'] = u
+    br.form['passwd'] = p
     br.submit()
