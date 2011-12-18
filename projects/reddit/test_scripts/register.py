@@ -6,15 +6,18 @@ import urllib
 import logging
 import sys
 import time
+import random
 from reddit_settings import *
 
 class Transaction(object):
     def __init__(self):
         self.custom_timers = {}
 
-    def run(self, basename='user_', num=1):
+    def run(self, basename='onetime_', num=1, predictable=False):
         for i in xrange(num):
             uname = basename + str(i+1)
+            if not predictable:
+                uname += random.randint(1, 10000)
 
             (cj, br) = init_browser()
 
@@ -29,9 +32,10 @@ class Transaction(object):
 if __name__ == '__main__':
     trans = Transaction()
     if len(sys.argv) == 3:
+        # generate predictably-named users for use in tests
         basename = sys.argv[1]
         num = int(sys.argv[2])
-        trans.run(basename, num)
+        trans.run(basename, num, True)
     else:
         trans.run()
     print trans.custom_timers
