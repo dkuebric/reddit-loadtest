@@ -19,7 +19,7 @@ class Transaction(object):
             if not predictable:
                 uname += random.randint(1, 10000)
 
-            (cj, br) = init_browser()
+            (cj, br) = _init_browser()
 
             br.open(BASE_URL)
             br.select_form(predicate=lambda f: 'id' in f.attrs and f.attrs['id'] == 'login_reg')

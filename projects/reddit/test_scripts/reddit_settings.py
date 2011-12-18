@@ -13,12 +13,15 @@ PASS = 'reddit' # password for all generated users
 POOLS = {}
 
 class UserPool(object):
-    def __init__(self, size=100, basename=BASE_USERNAME):
+    def __init__(self, size=50, basename=BASE_USERNAME):
         self.in_users = []
         self.out_users = {}
         for i in xrange(size):
             uname = basename + str(i+1)
-            self.in_users.append(uname)
+            print "Filling pool with", uname
+            (cj, br) = _init_browser()
+            u = User(uname, cj, br)
+            self.in_users.append(u)
 
     def checkout(self):
         u = self.in_users.pop()
@@ -37,9 +40,24 @@ def get_user(poolname):
 def put_user(poolname, u):
     return POOLS[poolname].checkin(u)
 
+class User(object):
+    def __init__(self, user, cj, br):
+        self.user = user
+        self.cj = cj
+        self.br = br
+        self.logged_in = False
+
+    def ensure_logged_in(self):
+        if not self.logged_in:
+            _login(self.br, self.user, PASS)
+            self.logged_in = True
+        return
+
+    def __str__(self):
+        return "User<user=%s,logged_in=%s>" % (self.user, self.logged_in)
 
 # utility functions
-def init_browser():
+def _init_browser():
     """Returns an initialized browser and associated cookie jar."""
     br = mechanize.Browser()
     cj = cookielib.LWPCookieJar()
@@ -54,7 +72,7 @@ def init_browser():
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
     return cj,br
 
-def login(br, u, p):
+def _login(br, u, p):
     _ = br.open(BASE_URL)
 
     br.select_form(nr=1)

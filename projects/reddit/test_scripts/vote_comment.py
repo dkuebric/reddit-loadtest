@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# some parts from http://stackoverflow.com/questions/4720470/using-python-and-mechanize-to-submit-form-data-and-authenticate
 
 import mechanize
 import urllib
+import random
 from reddit_settings import get_user, put_user, BASE_URL, FORM_DBG
 
-POOL = 'submit_comment'
+POOL = 'vote_comment'
 user = get_user(POOL)
 put_user(POOL, user)
 
@@ -36,20 +36,32 @@ class Transaction(object):
         br.select_form(nr=0)
         uh = br.form['uh']
 
-        br.select_form(nr=12)
-        thing_id = br.form['thing_id']
-        id = '#' + br.form.attrs['id']
-        # The id that gets posted is the form id with a '#' prepended.
+        # pick a random comment by finding its form -- XXX thread must have ~ 100 comments
+        thing_id = None
+        tries = 0
+        while not thing_id:
+            c_num = random.randint(10,90)
+            try:
+                br.select_form(nr=c_num)
+                thing_id = br.form['thing_id']
+            except Exception, e:
+                # didn't actually find a comment; try again
+                if tries > 5:
+                    put_user(POOL, user)
+                    return
+                else:
+                    tries += 1
+                continue
 
-        data = {'uh':uh, 'thing_id':thing_id, 'id':id, 'renderstyle':'html', 'r':rval, 'text':"This is such an interesting comment!  Upboat me!"}
+        # upvote or downvote?
+        vote_dir = '1' if random.randint(1,10) < 8 else '-1'
+
+        data = {'uh':uh, 'id':thing_id, 'renderstyle':'html', 'r':rval, 'dir': vote_dir, 'vh': '<$>votehash</$>', }
         new_data_dict = dict((k, urllib.quote(v).replace('%20', '+')) for k, v in data.iteritems())
 
-        # not sure if the replace needs to happen, I did it anyway
-        new_data = 'thing_id=%(thing_id)s&text=%(text)s&id=%(id)s&r=%(r)s&uh=%(uh)s&renderstyle=%(renderstyle)s' %(new_data_dict)
+        new_data = 'id=%(id)s&vh=%(vh)s&dir=%(dir)s&r=%(r)s&uh=%(uh)s&renderstyle=%(renderstyle)s' % (new_data_dict)
 
-        # not sure which of these headers are really needed, but it works with all
-        # of them, so why not just include them.
-        req = mechanize.Request(BASE_URL + '/api/comment', new_data)
+        req = mechanize.Request(BASE_URL + '/api/vote', new_data)
         req.add_header('Referer', posting)
         req.add_header('Accept', ' application/json, text/javascript, */*')
         req.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
