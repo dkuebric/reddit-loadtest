@@ -1,9 +1,13 @@
 ##reddit-loadtest
 multi-mechanize load tests for open-source reddit installations
 
-work in progress.
+Work in progress, with help from Corey Goldberg.
 
 ###Running
-Requires multi-mechanize.
+Requires multi-mechanize.  There's currently two tests:
+
+* reddit - performs r/w load on a particular comment thread with a number of simultaneous logged-in users, including comments, upvotes, and downvotes
+* reddit\_read - read-only tests for /all/\* lists
 
     $ multi-mechanize reddit
+    $ multi-mechanize reddit_read
