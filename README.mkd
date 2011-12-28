@@ -11,3 +11,9 @@ Requires multi-mechanize.  There's currently two tests:
 
     $ multi-mechanize reddit
     $ multi-mechanize reddit_read
+
+###Reddit configuration
+There's a few .ini file tweaks necessary to make your load tests run smoothly:
+
+* disable registration captcha - allows automated registration
+* disable rate limiting - for obvious reasons
