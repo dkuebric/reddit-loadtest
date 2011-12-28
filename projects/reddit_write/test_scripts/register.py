@@ -10,9 +10,6 @@ import random
 from util import _init_browser, BASE_URL
 
 class Transaction(object):
-    def __init__(self):
-        self.custom_timers = {}
-
     def run(self, basename='onetime_', num=1, predictable=False):
         for i in xrange(num):
             uname = basename + str(i+1)
@@ -40,4 +37,3 @@ if __name__ == '__main__':
         trans.run(basename, num, True)
     else:
         trans.run()
-    print trans.custom_timers

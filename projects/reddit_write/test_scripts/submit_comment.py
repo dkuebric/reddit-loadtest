@@ -8,9 +8,6 @@ from util import UserPool, BASE_URL, THREAD
 POOL = UserPool()
 
 class Transaction(object):
-    def __init__(self):
-        self.custom_timers = {}
-
     def run(self):
         user = POOL.checkout()
         user.ensure_logged_in()
@@ -44,4 +41,3 @@ class Transaction(object):
 if __name__ == '__main__':
     trans = Transaction()
     trans.run()
-    print trans.custom_timers
