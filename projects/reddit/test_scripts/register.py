@@ -7,7 +7,7 @@ import logging
 import sys
 import time
 import random
-from reddit_settings import *
+from util import _init_browser, BASE_URL
 
 class Transaction(object):
     def __init__(self):
@@ -26,7 +26,9 @@ class Transaction(object):
             br.form['user'] = uname
             br.form['passwd'] = 'reddit'
             br.form['passwd2'] = 'reddit'
-            br.submit()
+            r = br.submit()
+            r.read()
+            assert (r.code == 200), 'Bad HTTP Response'
             print "Created user " + uname
 
 if __name__ == '__main__':

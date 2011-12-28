@@ -3,36 +3,27 @@
 import mechanize
 import urllib
 import random
-from reddit_settings import get_user, put_user, BASE_URL, FORM_DBG
+from util import UserPool, BASE_URL, THREAD
 
-POOL = 'vote_comment'
-user = get_user(POOL)
-put_user(POOL, user)
+POOL = UserPool()
 
 class Transaction(object):
     def __init__(self):
         self.custom_timers = {}
 
     def run(self):
-        user = get_user(POOL)
+        user = POOL.checkout()
         user.ensure_logged_in()
         br = user.br
         cj = user.cj
 
         # Open up comment page
-        posting = BASE_URL + '/r/reddit_test6/comments/2d/httpgooglecomq376080238706/?'
-        rval = 'reddit_test6'
-        # you can get the rval in other ways, but this will work for testing
-
+        posting = THREAD
+        rval = THREAD.split('/')[4]
         r = br.open(posting)
+        r.read()
+        assert (r.code == 200), 'Bad HTTP Response'
 
-        if FORM_DBG:
-            i = 0
-            for e in br.forms():
-                print i, e
-                i += 1
-
-        # You need the 'uh' value from the first form
         br.select_form(nr=0)
         uh = br.form['uh']
 
@@ -47,7 +38,7 @@ class Transaction(object):
             except Exception, e:
                 # didn't actually find a comment; try again
                 if tries > 5:
-                    put_user(POOL, user)
+                    user.checkin()
                     return
                 else:
                     tries += 1
@@ -61,15 +52,11 @@ class Transaction(object):
 
         new_data = 'id=%(id)s&vh=%(vh)s&dir=%(dir)s&r=%(r)s&uh=%(uh)s&renderstyle=%(renderstyle)s' % (new_data_dict)
 
-        req = mechanize.Request(BASE_URL + '/api/vote', new_data)
-        req.add_header('Referer', posting)
-        req.add_header('Accept', ' application/json, text/javascript, */*')
-        req.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-        req.add_header('X-Requested-With', 'XMLHttpRequest')
-        cj.add_cookie_header(req)
-        res = mechanize.urlopen(req)
+        r = br.open(BASE_URL + '/api/vote', new_data)
+        r.read()
+        assert (r.code == 200), 'Bad HTTP Response'
 
-        put_user(POOL, user)
+        user.checkin()
 
 if __name__ == '__main__':
     trans = Transaction()

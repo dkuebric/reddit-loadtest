@@ -1,81 +1,20 @@
-import mechanize
-import cookielib
+###############################################################################
+# Settings file for reddit load tests
+###############################################################################
 
-BASE_URL = 'http://reddit.tracelytics.com'
+# base URL of installation
+BASE_URL = 'http://ec2-50-17-153-135.compute-1.amazonaws.com'
 
-FORM_DBG = False
+# the maximum number of threads you plan to run for each test
+# (specifies user pool size for each test script)
+MAX_THREADS = 50
 
 # pre-generated users up to 100 -- must be created by running register.py manually
 BASE_USERNAME = 'user_'
-PASS = 'reddit' # password for all generated users
 
-# user pool management for different tests
-POOLS = {}
+# password for all generated users
+PASS = 'reddit'
 
-class UserPool(object):
-    def __init__(self, size=50, basename=BASE_USERNAME):
-        self.in_users = []
-        self.out_users = {}
-        for i in xrange(size):
-            uname = basename + str(i+1)
-            print "Filling pool with", uname
-            (cj, br) = _init_browser()
-            u = User(uname, cj, br)
-            self.in_users.append(u)
 
-    def checkout(self):
-        u = self.in_users.pop()
-        self.out_users[u] = True
-        return u
-
-    def checkin(self, u):
-        del self.out_users[u]
-        self.in_users.append(u)
-
-def get_user(poolname):
-    if not poolname in POOLS:
-        POOLS[poolname] = UserPool()
-    return POOLS[poolname].checkout()
-
-def put_user(poolname, u):
-    return POOLS[poolname].checkin(u)
-
-class User(object):
-    def __init__(self, user, cj, br):
-        self.user = user
-        self.cj = cj
-        self.br = br
-        self.logged_in = False
-
-    def ensure_logged_in(self):
-        if not self.logged_in:
-            _login(self.br, self.user, PASS)
-            self.logged_in = True
-        return
-
-    def __str__(self):
-        return "User<user=%s,logged_in=%s>" % (self.user, self.logged_in)
-
-# utility functions
-def _init_browser():
-    """Returns an initialized browser and associated cookie jar."""
-    br = mechanize.Browser()
-    cj = cookielib.LWPCookieJar()
-    br.set_cookiejar(cj)
-
-    br.set_handle_equiv(True)
-    br.set_handle_gzip(True)
-    br.set_handle_redirect(True)
-    br.set_handle_referer(True)
-    br.set_handle_robots(False)
-
-    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-    return cj,br
-
-def _login(br, u, p):
-    _ = br.open(BASE_URL)
-
-    br.select_form(nr=1)
-    br.form['user'] = u
-    br.form['passwd'] = p
-    br.submit()
+# comment for submit_comment and vote_comment tests
+THREAD = BASE_URL + '/r/reddit_test6/comments/22/httpgooglecomq392636488427/'
