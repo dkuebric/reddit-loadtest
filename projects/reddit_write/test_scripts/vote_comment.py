@@ -12,7 +12,6 @@ class Transaction(object):
         user = POOL.checkout()
         user.ensure_logged_in()
         br = user.br
-        cj = user.cj
 
         # Open up comment page
         posting = THREAD

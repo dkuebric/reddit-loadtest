@@ -10,8 +10,8 @@ class UserPool(object):
         for i in xrange(size):
             uname = basename + str(i+1)
             print "Filling pool with", uname
-            (cj, br) = _init_browser()
-            u = User(uname, cj, br, self)
+            br = _init_browser()
+            u = User(uname, br, self)
             self.in_users.append(u)
 
     def checkout(self):
@@ -24,9 +24,8 @@ class UserPool(object):
         self.in_users.append(u)
 
 class User(object):
-    def __init__(self, user, cj, br, pool):
+    def __init__(self, user, br, pool):
         self.user = user
-        self.cj = cj
         self.br = br
         self.logged_in = False
         self.pool = weakref.proxy(pool)
@@ -47,8 +46,6 @@ class User(object):
 def _init_browser():
     """Returns an initialized browser and associated cookie jar."""
     br = mechanize.Browser()
-    cj = cookielib.LWPCookieJar()
-    br.set_cookiejar(cj)
 
     br.set_handle_equiv(True)
     br.set_handle_gzip(True)
@@ -57,7 +54,7 @@ def _init_browser():
     br.set_handle_robots(False)
 
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-    return cj,br
+    return br
 
 def _login(br, u, p):
     _ = br.open(BASE_URL)
