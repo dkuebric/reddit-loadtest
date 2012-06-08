@@ -3,7 +3,7 @@
 ###############################################################################
 
 # base URL of installation
-BASE_URL = 'http://ec2-50-17-153-135.compute-1.amazonaws.com'
+BASE_URL = 'http://reddit.tlys.us'
 
 # the maximum number of threads you plan to run for each test
 # (specifies user pool size for each test script)
@@ -17,4 +17,4 @@ PASS = 'reddit'
 
 
 # comment for submit_comment and vote_comment tests
-THREAD = BASE_URL + '/r/reddit_test6/comments/22/httpgooglecomq392636488427/'
+THREAD = BASE_URL + '/r/reddit_test7/comments/2q/httpgooglecomq366843696587/'

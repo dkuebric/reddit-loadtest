@@ -5,7 +5,7 @@ import time
 class Transaction(object):
     def __init__(self):
         self.custom_timers = {}
-        self.base_url = 'http://reddit.tracelytics.com'
+        self.base_url = 'http://reddit.tlys.us'
     
     def run(self):
         br = mechanize.Browser()
