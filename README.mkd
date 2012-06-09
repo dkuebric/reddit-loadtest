@@ -1,19 +1,22 @@
 ##reddit-loadtest
-multi-mechanize load tests for open-source reddit installations
+multi-mechanize load tests for open-source reddit installations, also talk fodder.
 
-Work in progress, with help from Corey Goldberg.
+###PyGotham 2012 Slides
+Available on slideshare: [http://www.slideshare.net/dkuebrich/python-load-testing-pygotham-2012](http://hub.am/MvqKOH)
 
 ###Running
-Requires multi-mechanize.  There's currently two tests:
+Requires [multi-mechanize](https://github.com/cgoldberg/multi-mechanize).  There's currently two tests:
 
-* reddit - performs r/w load on a particular comment thread with a number of simultaneous logged-in users, including comments, upvotes, and downvotes
 * reddit\_read - read-only tests for /all/\* lists
+* reddit\_write - performs r/w load on a particular comment thread with a number of simultaneous logged-in users, including comments, upvotes, and downvotes
 
-    $ multi-mechanize reddit
-    $ multi-mechanize reddit_read
+    $ multimech-run reddit_read
 
 ###Reddit configuration
 There's a few .ini file tweaks necessary to make your load tests run smoothly:
 
-* disable registration captcha - allows automated registration
+* disable registration captcha - allows automated registration (now default in reddit)
 * disable rate limiting - for obvious reasons
+
+###About the tests
+reddit\_read provided by Corey Goldberg
